@@ -1,4 +1,5 @@
-FROM {{ DOCKER_IMAGE_OPENEDX }}
+###### Development image with root user
+FROM {{ DOCKER_IMAGE_OPENEDX }} as development-root
 MAINTAINER Overhang.io <contact@overhang.io>
 
 # Install useful system requirements
@@ -22,9 +23,13 @@ RUN rm -r /openedx/staticfiles && \
 COPY ./bin /openedx/bin
 RUN chmod a+x /openedx/bin/*
 
-# Configure new user
-ARG USERID=1000
-RUN create-user.sh $USERID
-
 # Default django settings
 ENV SETTINGS tutor.development
+
+###### Development image with user ID that matches host
+FROM development-root as development
+
+# Configure new user and copy openedx data with chown
+ARG USERID=1000
+RUN create-user.sh $USERID
+COPY --from=development-root --chown=${USERID}:${USERID} /openedx /
