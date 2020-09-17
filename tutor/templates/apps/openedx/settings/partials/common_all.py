@@ -2,6 +2,8 @@
 import json
 import os
 
+from xmodule.modulestore.modulestore_settings import update_module_store_settings
+
 # Mongodb connection parameters: simply modify `mongodb_parameters` to affect all connections to MongoDb.
 mongodb_parameters = {
     "host": "{{ MONGODB_HOST }}",
@@ -42,7 +44,7 @@ API_ACCESS_MANAGER_EMAIL = ENV_TOKENS.get("API_ACCESS_MANAGER_EMAIL", ENV_TOKENS
 API_ACCESS_FROM_EMAIL = ENV_TOKENS.get("API_ACCESS_FROM_EMAIL", ENV_TOKENS["CONTACT_EMAIL"])
 
 # Get rid completely of coursewarehistoryextended, as we do not use the CSMH database
-INSTALLED_APPS.remove("coursewarehistoryextended")
+INSTALLED_APPS.remove("lms.djangoapps.coursewarehistoryextended")
 DATABASE_ROUTERS.remove(
     "openedx.core.lib.django_courseware_routers.StudentModuleHistoryExtendedRouter"
 )

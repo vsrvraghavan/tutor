@@ -163,7 +163,10 @@ See the official certbot documentation for your platform: https://certbot.eff.or
 
 @click.command(help="Upgrade from a previous Open edX named release")
 @click.option(
-    "--from", "from_version", default="ironwood", type=click.Choice(["ironwood"])
+    "--from",
+    "from_version",
+    default="juniper",
+    type=click.Choice(["ironwood", "juniper"]),
 )
 @click.option("-I", "--non-interactive", is_flag=True, help="Run non-interactively")
 @click.pass_obj
@@ -183,8 +186,14 @@ Are you sure you want to continue?"""
             fmt.question(question), default=True, abort=True, prompt_suffix=" "
         )
 
-    if from_version == "ironwood":
+    running_version = from_version
+    if running_version == "ironwood":
         upgrade_from_ironwood(context, config)
+        running_version = "juniper"
+
+    if running_version == "juniper":
+        upgrade_from_juniper(context, config)
+        running_version = "koa"
 
 
 def upgrade_from_ironwood(context, config):
@@ -198,7 +207,7 @@ def upgrade_from_ironwood(context, config):
         fmt.echo_info(
             "You are not running MongDB (ACTIVATE_MONGODB=false). It is your "
             "responsibility to upgrade your MongoDb instance to v3.6. There is "
-            "nothing left to do."
+            "nothing left to do to upgrade from Ironwood."
         )
         return
 
@@ -228,6 +237,37 @@ def upgrade_from_ironwood(context, config):
             "mongo",
             "--eval",
             'db.adminCommand({ setFeatureCompatibilityVersion: "3.6" })',
+        ]
+    )
+    compose.stop.callback([])
+
+
+def upgrade_from_juniper(context, config):
+    click.echo(fmt.title("Upgrading from Juniper"))
+    tutor_env.save(context.root, config)
+
+    click.echo(fmt.title("Stopping any existing platform"))
+    compose.stop.callback([])
+
+    if not config["ACTIVATE_MYSQL"]:
+        fmt.echo_info(
+            "You are not running MySQL (ACTIVATE_MYSQL=false). It is your "
+            "responsibility to upgrade your MySQL instance to v5.7. There is "
+            "nothing left to do to upgrade from Juniper."
+        )
+        return
+
+    click.echo(fmt.title("Upgrading MySQL from v5.6 to v5.7"))
+    compose.start.callback(detach=True, services=["mysql"])
+    compose.execute.callback(
+        [
+            "mysql",
+            "bash",
+            "-e",
+            "-c",
+            "mysql_upgrade -u {} --password='{}'".format(
+                config["MYSQL_ROOT_USERNAME"], config["MYSQL_ROOT_PASSWORD"]
+            ),
         ]
     )
     compose.stop.callback([])

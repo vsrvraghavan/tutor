@@ -35,6 +35,8 @@ DOCKER_IMAGE_ANDROID: "{{ DOCKER_REGISTRY }}overhangio/openedx-android:{{ TUTOR_
 DOCKER_IMAGE_FORUM: "{{ DOCKER_REGISTRY }}overhangio/openedx-forum:{{ TUTOR_VERSION }}"
 DOCKER_IMAGE_MEMCACHED: "{{ DOCKER_REGISTRY }}memcached:1.4.38"
 DOCKER_IMAGE_MONGODB: "{{ DOCKER_REGISTRY }}mongo:3.6.18"
+# TODO upgrade to 5.7.32 https://hub.docker.com/_/mysql?tab=tags&page=1&name=5.7
+# The upgrade procedure is here: https://dev.mysql.com/doc/refman/5.7/en/docker-mysql-getting-started.html#docker-upgrading
 DOCKER_IMAGE_MYSQL: "{{ DOCKER_REGISTRY }}mysql:5.6.49"
 DOCKER_IMAGE_ELASTICSEARCH: "{{ DOCKER_REGISTRY }}elasticsearch:1.5.2"
 DOCKER_IMAGE_NGINX: "{{ DOCKER_REGISTRY }}nginx:1.13"
@@ -64,7 +66,7 @@ OPENEDX_LMS_GUNICORN_WORKERS: 2
 OPENEDX_MYSQL_DATABASE: "openedx"
 OPENEDX_CSMH_MYSQL_DATABASE: "{{ OPENEDX_MYSQL_DATABASE }}_csmh"
 OPENEDX_MYSQL_USERNAME: "openedx"
-OPENEDX_COMMON_VERSION: "open-release/juniper.3"
+OPENEDX_COMMON_VERSION: "open-release/koa.test01"
 MYSQL_HOST: "mysql"
 MYSQL_PORT: 3306
 MYSQL_ROOT_USERNAME: "root"

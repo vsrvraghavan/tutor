@@ -1,7 +1,8 @@
 ###### Minimal image with base system requirements for most stages
-FROM docker.io/ubuntu:16.04 as minimal
+FROM docker.io/ubuntu:20.04 as minimal
 MAINTAINER Overhang.io <contact@overhang.io>
 
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && \
     apt install -y build-essential curl git language-pack-en
 ENV LC_ALL en_US.UTF-8
@@ -13,11 +14,11 @@ RUN apt update && \
     apt install -y libssl-dev zlib1g-dev libbz2-dev \
     libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
     xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
-ARG PYTHON_VERSION=3.5.9
+ARG PYTHON_VERSION=3.8.6
 ENV PYENV_ROOT /opt/pyenv
-RUN git clone https://github.com/pyenv/pyenv $PYENV_ROOT --branch v1.2.18 --depth 1
+RUN git clone https://github.com/pyenv/pyenv $PYENV_ROOT --branch v1.2.21 --depth 1
 RUN $PYENV_ROOT/bin/pyenv install $PYTHON_VERSION
-RUN $PYENV_ROOT/versions/$PYTHON_VERSION/bin/pyvenv /openedx/venv
+RUN $PYENV_ROOT/versions/$PYTHON_VERSION/bin/python -m venv /openedx/venv
 
 ###### Install Dockerize to wait for mysql DB availability
 FROM minimal as dockerize
@@ -35,26 +36,10 @@ RUN mkdir -p /openedx/edx-platform && \
 WORKDIR /openedx/edx-platform
 
 # Patch edx-platform
-# Get rid of lepl-related warnings
-# https://github.com/edx/edx-platform/pull/24059
-# https://github.com/overhangio/edx-platform/tree/overhangio/lepl-rfc6266-warning
-RUN curl https://github.com/overhangio/edx-platform/commit/5f21bbe77056d71ca61b97b6badcff3c1a31b858.patch | git apply -
-# Fix creation of LTI provider objects
-# https://github.com/edx/edx-platform/pull/24055
-# https://github.com/overhangio/edx-platform/tree/regisb/fix-lti-provider-admin
-RUN curl https://github.com/overhangio/edx-platform/commit/089b26eed0302ed1f9a5b24c5f3e563dd44abb04.patch | git apply -
-# Fix problem viewing when CSMH is disabled
-# https://github.com/edx/edx-platform/pull/24237
-# https://github.com/overhangio/edx-platform/tree/overhangio/fix-no-csmh
-RUN curl https://github.com/overhangio/edx-platform/commit/6dbf2eddf7a4563c04c3b51edf5e131106d69e19.patch | git apply -
-# Fix upload of video transcripts to s3
-# https://github.com/edx/edx-platform/pull/24800
-RUN curl https://github.com/edx/edx-platform/commit/80fa2cae128e2a1fd8ab298351b7b36c9d139e6c.patch | git apply -
 # Make it possible to disable learner records globally
 # https://github.com/edx/edx-platform/pull/25182
 # https://github.com/overhangio/edx-platform/tree/overhangio/disable-learner-records-from-settings
-RUN curl https://github.com/overhangio/edx-platform/commit/58f20a0547355080eeee346104a1719ad806902e.patch | git apply -
-
+RUN curl https://github.com/overhangio/edx-platform/commit/63e8fcb403f18ff24ef9ef6dbd5d38a7fa82fed6.patch | git apply -
 
 ###### Download extra locales to /openedx/locale/contrib/locale
 FROM minimal as locales
@@ -84,14 +69,12 @@ RUN pip install setuptools==44.1.0 pip==20.0.2 wheel==0.34.2
 # Install base requirements
 RUN pip install -r ./requirements/edx/base.txt
 
-# Install patched version of ora2
-RUN pip install https://github.com/overhangio/edx-ora2/archive/overhangio/boto2to3.zip
-
 # Install scorm xblock
-RUN pip install "openedx-scorm-xblock<11.0.0,>=10.0.1"
+# TODO upgrade scorm xblock
+# RUN pip install "openedx-scorm-xblock<12.0.0,>=11.0.0"
 
 # Install whitenoise, for serving static assets
-RUN pip install "whitenoise==5.1.0"
+RUN pip install "whitenoise==5.2.0"
 
 # Install private requirements: this is useful for installing custom xblocks.
 COPY ./requirements/ /openedx/requirements
@@ -118,7 +101,7 @@ FROM minimal as production
 
 # Install system requirements
 RUN apt update && \
-    apt install -y gettext gfortran graphviz graphviz-dev libffi-dev libfreetype6-dev libgeos-dev libjpeg8-dev liblapack-dev libmysqlclient-dev libpng12-dev libsqlite3-dev libxmlsec1-dev lynx ntp pkg-config rdfind && \
+    apt install -y gettext gfortran graphviz graphviz-dev libffi-dev libfreetype6-dev libgeos-dev libjpeg8-dev liblapack-dev libmysqlclient-dev libpng-dev libsqlite3-dev libxmlsec1-dev lynx ntp pkg-config rdfind && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=dockerize /usr/local/bin/dockerize /usr/local/bin/dockerize
