@@ -1,5 +1,12 @@
 dockerize -wait tcp://{{ MYSQL_HOST }}:{{ MYSQL_PORT }} -timeout 20s
 
+echo "Installing custom-form-app...."
+cd custom-form-app/
+pip install django-debug-toolbar
+pip install factory_boy
+pip install -e .
+./manage.py lms makemigrations
+echo "Finished Installing custom-form-app...."
 echo "Loading settings $DJANGO_SETTINGS_MODULE"
 
 ./manage.py lms migrate
