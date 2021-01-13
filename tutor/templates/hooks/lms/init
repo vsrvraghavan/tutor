@@ -1,13 +1,6 @@
 dockerize -wait tcp://{{ MYSQL_HOST }}:{{ MYSQL_PORT }} -timeout 20s
 
-echo "Installing custom-form-app...."
-cd custom-form-app/
-pip install django-debug-toolbar
-pip install factory_boy
-pip install -e .
-cd ..
-./manage.py lms makemigrations
-echo "Finished Installing custom-form-app...."
+
 echo "Loading settings $DJANGO_SETTINGS_MODULE"
 
 ./manage.py lms migrate
@@ -33,6 +26,16 @@ if [ -d /openedx/data/uploads/ ]; then
     rm -rf /openedx/data/uploads/
   fi
 fi
+
+echo "Installing custom-form-app...."
+cd custom-form-app/
+pip install django-debug-toolbar
+pip install factory_boy
+pip install -e .
+cd ..
+######./manage.py lms makemigrations
+./manage.py lms migrate
+echo "Finished Installing custom-form-app...."
 
 # Create waffle switches to enable some features, if they have not been explicitely defined before
 # Completion tracking: add green ticks to every completed unit
