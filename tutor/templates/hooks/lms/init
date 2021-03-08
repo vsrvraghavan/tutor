@@ -31,7 +31,7 @@ echo "Installing custom-form-app...."
 cd custom-form-app/
 pip install django-debug-toolbar
 pip install factory_boy
-pip install -e .
+pip install -e . 
 cd ..
 ######./manage.py lms makemigrations
 ./manage.py lms migrate
