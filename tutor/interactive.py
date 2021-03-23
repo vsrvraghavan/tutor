@@ -28,7 +28,7 @@ def load_all(root, interactive=True):
 
 
 def ask_questions(config, defaults):
-    run_for_prod = config.get("LMS_HOST") != "local.overhang.io"
+    run_for_prod = config.get("LMS_HOST") != "openedx.onthewifi.com"
     run_for_prod = click.confirm(
         fmt.question(
             "Are you configuring a production platform? Type 'n' if you are just testing Tutor on your local computer"
@@ -38,8 +38,8 @@ def ask_questions(config, defaults):
     )
     if not run_for_prod:
         dev_values = {
-            "LMS_HOST": "local.overhang.io",
-            "CMS_HOST": "studio.local.overhang.io",
+            "LMS_HOST": "openedx.onthewifi.com",
+            "CMS_HOST": "studio.openedx.onthewifi.com",
             "ENABLE_HTTPS": False,
         }
         fmt.echo_info(
