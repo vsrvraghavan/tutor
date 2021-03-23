@@ -7,7 +7,7 @@ ANDROID_OAUTH2_SECRET: "{{ 24|random_string }}"
 ID: "{{ 24|random_string }}"
 
 # This must be defined early
-LMS_HOST: "www.myopenedx.com"
+LMS_HOST: "openedx.onthewifi.com"
 
 # The following are default values
 RUN_CADDY: true
@@ -68,7 +68,7 @@ MYSQL_HOST: "mysql"
 MYSQL_PORT: 3306
 MYSQL_ROOT_USERNAME: "root"
 NGINX_HTTP_PORT: 80
-PLATFORM_NAME: "Raga Open edX"
+PLATFORM_NAME: "Open edX On The WiFi"
 PLUGINS: []
 REDIS_HOST: "redis"
 REDIS_PORT: 6379
