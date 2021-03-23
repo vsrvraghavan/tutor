@@ -39,7 +39,7 @@ def ask_questions(config, defaults):
     if not run_for_prod:
         dev_values = {
             "LMS_HOST": "openedx.onthewifi.com",
-            "CMS_HOST": "studio.openedx.onthewifi.com",
+            "CMS_HOST": "openedx-studio.onthewifi.com",
             "ENABLE_HTTPS": False,
         }
         fmt.echo_info(
