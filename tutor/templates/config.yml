@@ -10,7 +10,7 @@ ID: "{{ 24|random_string }}"
 LMS_HOST: "openedx.onthewifi.com"
 
 # The following are default values
-RUN_CADDY: true
+RUN_CADDY: false
 RUN_LMS: true
 RUN_CMS: true
 RUN_FORUM: true
@@ -19,7 +19,7 @@ ENABLE_HTTPS: false
 RUN_MONGODB: true
 RUN_MYSQL: true
 RUN_REDIS: true
-RUN_SMTP: true
+RUN_SMTP: false
 CMS_HOST: "studio.{{ LMS_HOST }}"
 CONTACT_EMAIL: "contact@{{ LMS_HOST }}"
 OPENEDX_AWS_ACCESS_KEY: ""
