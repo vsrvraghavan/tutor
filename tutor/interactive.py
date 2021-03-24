@@ -38,7 +38,7 @@ def ask_questions(config, defaults):
     )
     if not run_for_prod:
         dev_values = {
-            "LMS_HOST": "openedx.onthewifi.com",
+            "LMS_HOST": "local.overhang.io",
             "CMS_HOST": "openedx-studio.onthewifi.com",
             "ENABLE_HTTPS": False,
         }
